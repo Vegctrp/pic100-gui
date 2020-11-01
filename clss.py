@@ -1,13 +1,13 @@
 from func import *
 from util import *
+from tkinter import Button
 from functools import partial
 
 class command():
     # 画像処理コマンドと対応するボタンオブジェクト、軽い説明
-    def __init__(self, func):
+    def __init__(self, func, app):
         self.process = func
-        self.button_list = None
-        self.button_easy = None
+        self.app = app
         self.is_skip = False
 
     def __call__(self, img, *args):
@@ -16,25 +16,70 @@ class command():
         else:
             return self.process(img)
 
-    def show_button_easy(self, app, x, y):
-        self.button_easy = Button(app.root, text=u"", command=partial(self.button_easy_process, app))
-        self.button_easy.place(x=x, y=y)
+class command_easy(command):
+    def __init__(self, func, app):
+        super().__init__(func, app)
+    
+    def show_button(self, x, y):
+        self.button = button_easy(self.app, self, x, y)
 
-    def button_easy_process(self, app):
-        app.commands = [command(self.process)]
-        app.output_image = process_all(app.input_image, app.commands)
-        app.set_output_image()
+    def button_process(self):
+        self.app.commands = [command(self.process, self.app)]
+        self.app.process()
+
+class command_list(command):
+    def __init__(self, func, app):
+        super().__init__(func, app)
+    
+    def show_button(self, x, y):
+        self.button = button_list(self.app, self, x, y)
+
+    def button_add(self):
+        self.app.commands.append(command(self.process, self.app))
+        self.app.process()
+
+class command_proc(command):
+    def __init__(self, func, app):
+        super().__init__(func, app)
+    
+    def show_button(self, x, y):
+        self.button = button_proc(self.app, self, x, y)
+    
+    def button_process(self):
+        pass
+
+
 
 class button():
-    def __init__(self):
+    def __init__(self, app, command, x, y):
+        self.app = app
+        self.command = command
+        self.button = None
+        self.make_button(x, y)
+    
+    def make_button(self, x, y):
         pass
 
-class button_list():
+class button_easy(button):
+    def __init__(self, app, command, x, y):
+        super().__init__(app, command, x, y)
+
+    def make_button(self, x, y):
+        self.button = Button(self.app.root, text=u"", command=self.command.button_process)
+        self.button.place(x=x, y=y)
+
+class button_list(button):
     # コマンドを一覧表示するほうのボタン
-    def __init__(self):
+    def __init__(self, app, command, x, y):
+        super().__init__(app, command, x, y)
+    
+    def make_button(self, x, y):
         pass
 
-class button_proc():
+class button_proc(button):
     # 画像処理コマンドの引数を指定する、入出力の型をわかりやすくするためのオブジェクト
-    def __init__(self):
+    def __init__(self, app, command, x, y):
+        super().__init__(app, command, x, y)
+
+    def make_button(self, x, y):
         pass
