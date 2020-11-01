@@ -1,6 +1,11 @@
 import cv2
 import numpy as np
 
+
+class func_info():
+    def __init__(self):
+        pass
+
 # 01
 def BGR2RGB(img):
     H,W,C = img.shape
