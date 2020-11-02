@@ -14,7 +14,7 @@ class command():
         if self.is_skip:
             return img
         else:
-            return self.process(img)
+            return self.process(img, *args)
 
 class command_easy(command):
     def __init__(self, func, app):

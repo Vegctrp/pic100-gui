@@ -48,8 +48,7 @@ class Application(tk.Frame):
         close1.grid(row=0,column=2)
 
         ##################################### # easy button仮置き
-        self.btns = []
-        self.btn_funcs = [BGR2RGB, BGR2GRAY, binarization, OTSU_binarization, hue_inversion, color_reduction, mean_pooling, max_pooling, Gaussian_filter, Median_filter]
+        self.btn_funcs = funcs.copy()
         self.btn_commands = [command_easy(i, self) for i in self.btn_funcs]
         for i, com in enumerate(self.btn_commands):
             com.show_button(x=i*20, y=440)

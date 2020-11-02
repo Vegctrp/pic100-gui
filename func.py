@@ -1,10 +1,16 @@
 import cv2
 import numpy as np
 
+funcs = []
 
 class func_info():
-    def __init__(self):
-        pass
+    def __init__(self, func, name, argstype=None):
+        self.func = func
+        self.name = name
+        self.argstype = argstype
+
+    def __call__(self, *args):
+        return self.func(*args)
 
 # 01
 def BGR2RGB(img):
@@ -19,6 +25,8 @@ def BGR2RGB(img):
     out[:, :, 2] = B
     return out.astype(np.uint8)
 
+funcs.append(func_info(BGR2RGB, "BGR2RGB"))
+
 # 02
 def BGR2GRAY(img):
     H,W,C = img.shape
@@ -26,21 +34,25 @@ def BGR2GRAY(img):
     G = img[:, :, 1].copy()
     R = img[:, :, 2].copy()
 
-    out = 0.2126 * R + 0.7152 * G + 0.0722 * B
-    #out = np.zeros((H,W,3))
-    #out[:, :, 0] = outmat
-    #out[:, :, 1] = outmat
-    #out[:, :, 2] = outmat
+    outmat = 0.2126 * R + 0.7152 * G + 0.0722 * B
+    out = np.zeros((H,W,3))
+    out[:, :, 0] = outmat
+    out[:, :, 1] = outmat
+    out[:, :, 2] = outmat
     return out.astype(np.uint8)
 
+funcs.append(func_info(BGR2GRAY, "BGR2GRAY"))
+
 # 03
-def binarization(img, threshold=128): # for gray-scale image
+def Binarization(img, threshold=128): # for gray-scale image
     img[img < threshold] = 0
     img[img >= threshold] = 255
     return img.astype(np.uint8)
 
+funcs.append(func_info(Binarization, "Binarization"))
+
 # 04
-def OTSU_binarization(img): # for gray-scale image
+def OTSU_Binarization(img): # for gray-scale image
     max_t=0
     use_t=-1
     for t in range(0,256):
@@ -57,6 +69,8 @@ def OTSU_binarization(img): # for gray-scale image
     img[img < use_t]=0
     img[img >= use_t]=255
     return img.astype(np.uint8)
+
+funcs.append(func_info(OTSU_Binarization, "OTSU_Bin"))
 
 # 05
 def BGR2HSV(img):
@@ -82,7 +96,6 @@ def BGR2HSV(img):
 
     S = (max_values.copy() - min_values.copy())
     V = max_values.copy()
-
     return H,S,V
 
 def HSV2BGR(H,S,V):
@@ -104,22 +117,26 @@ def HSV2BGR(H,S,V):
     img = np.clip(img,0,1)
     return img*255
 
-def hue_inversion(img):
+def Hue_inversion(img, addition=180):
     H,S,V = BGR2HSV(img)
-    Hd = (H + 180) % 360
+    Hd = (H + addition) % 360
     out = HSV2BGR(Hd,S,V)
     return out.astype(np.uint8)
 
+funcs.append(func_info(Hue_inversion, "Hue_inversion"))
+
 # 06
-def color_reduction(img):
+def Color_reduction(img, sep=64):
     img = img.astype(np.float64)
     height,width,C = img.shape
 
-    out = (img // 64) *64 + 32
-    return out.astype(np.uint8)
+    out = (img // sep) *sep + sep//2
+    return out.clip(0,255).astype(np.uint8)
+
+funcs.append(func_info(Color_reduction, "Color_reduction"))
 
 # 07
-def mean_pooling(img,pixels=8):
+def Mean_pooling(img,pixels=8):
     img = img.astype(np.float64)
     height,width,C = img.shape
 
@@ -132,8 +149,10 @@ def mean_pooling(img,pixels=8):
                 out[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col] = np.mean(img[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col])
     return out.astype(np.uint8)
 
+funcs.append(func_info(Mean_pooling, "Mean_pooling"))
+
 # 08
-def max_pooling(img,pixels=8):
+def Max_pooling(img,pixels=8):
     img = img.astype(np.float64)
     height,width,C = img.shape
 
@@ -145,6 +164,8 @@ def max_pooling(img,pixels=8):
             for col in range(3):
                 out[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col] = np.max(img[y*pixels:(y+1)*pixels, x*pixels:(x+1)*pixels, col])
     return out.astype(np.uint8)
+
+funcs.append(func_info(Max_pooling, "Max_pooling"))
 
 # 09
 def Gaussian_filter(img, k=5, sigma=1.3, padding_type='constant'):
@@ -171,6 +192,8 @@ def Gaussian_filter(img, k=5, sigma=1.3, padding_type='constant'):
         out = out.reshape((height,width))
     return out.astype(np.uint8)
 
+funcs.append(func_info(Gaussian_filter, "Gaussian_filter"))
+
 # 10
 def Median_filter(img):
     img = img.astype(np.float64)
@@ -184,3 +207,5 @@ def Median_filter(img):
                 out[y-1,x-1,col]=np.median(padimg[y-1:y+2, x-1:x+2, col])
 
     return out.astype(np.uint8)
+
+funcs.append(func_info(Median_filter, "Median_filter"))
