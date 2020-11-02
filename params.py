@@ -14,6 +14,9 @@ easy_button_x_base = 10
 easy_button_x_diff = 20
 easy_button_y_base = 440
 
+proc_button_x_base = 10
+proc_button_x_diff = 100
+proc_button_y_base = 440
 
 list_button_x_base = 800
 list_button_y_base = 10

@@ -47,18 +47,10 @@ class Application(tk.Frame):
         close1 = Button(self.root, text=u'閉じる', command=self.close_clicked)
         close1.grid(row=0,column=2)
 
-        ##################################### # easy button仮置き
-        self.btn_funcs = funcs.copy()
-        self.easy_btn_commands = [command_easy(i, self) for i in self.btn_funcs]
-        for i, com in enumerate(self.easy_btn_commands):
-            com.show_button(x=params.easy_button_x_base+i*params.easy_button_x_diff, y=params.easy_button_y_base)
-        self.list_btn_commands = [command_list(i, self) for i in self.btn_funcs]
-        for i, com in enumerate(self.list_btn_commands):
-            com.show_button(x=params.list_button_x_base, y=params.list_button_y_base+i*params.list_button_y_diff)
-        #######################################
 
     def process(self):
         self.output_image = process_all(self.input_image, self.commands)
+        print(self.commands)
         self.set_output_image()
 
     def set_input_image(self): # self.input_imageをresizeしてself.input_thumbnailに反映
@@ -78,6 +70,20 @@ class Application(tk.Frame):
         self.output_canvas.photo = ImageTk.PhotoImage(image=Image.fromarray(self.output_thumbnail))
         self.output_canvas.create_image(out_shape[0]//2, out_shape[1]//2, image=self.output_canvas.photo)
 
+    def set_proc_buttons(self):
+        for i,com in enumerate(self.commands):
+            if com.button is None:
+                com.show_button(x=params.proc_button_x_base+i*params.proc_button_x_diff, y=params.proc_button_y_base)
+
+    def delete_proc(self, index):
+        self.commands[index].button.destroy()
+        self.commands.pop(index)
+        for com in self.commands[index:]:
+            com.index -= 1
+            com.button.x -= params.proc_button_x_diff
+            com.button.emplace_button()
+        #self.set_proc_buttons()
+        self.process()
 
     def button1_clicked(self):
         # 入力ファイル指定
@@ -95,6 +101,16 @@ class Application(tk.Frame):
         # 出力画像を作成(commandsに何も登録されていないときは元画像をそのまま出力するはず)
         self.output_image = process_all(self.input_image, self.commands)
         self.set_output_image()
+
+        ##################################### # easy button仮置き
+        self.btn_funcs = funcs.copy()
+        #self.easy_btn_commands = [command_easy(i, self) for i in self.btn_funcs]
+        #for i, com in enumerate(self.easy_btn_commands):
+        #    com.show_button(x=params.easy_button_x_base+i*params.easy_button_x_diff, y=params.easy_button_y_base)
+        self.list_btn_commands = [command_list(i, self) for i in self.btn_funcs]
+        for i, com in enumerate(self.list_btn_commands):
+            com.show_button(x=params.list_button_x_base, y=params.list_button_y_base+i*params.list_button_y_diff)
+        #######################################
 
 
     def close_clicked(self):
