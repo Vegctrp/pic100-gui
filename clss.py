@@ -15,6 +15,9 @@ class command():
             return img
         else:
             return self.process(img, *args)
+    
+    def copy(self):
+        return command(self.process, self.app)
 
 class command_easy(command):
     def __init__(self, func, app):
@@ -24,7 +27,7 @@ class command_easy(command):
         self.button = button_easy(self.app, self, x, y)
 
     def button_process(self):
-        self.app.commands = [command(self.process, self.app)]
+        self.app.commands = [command_proc(self.process.copy(), self.app)]
         self.app.process()
 
 class command_list(command):
@@ -34,8 +37,9 @@ class command_list(command):
     def show_button(self, x, y):
         self.button = button_list(self.app, self, x, y)
 
-    def button_add(self):
-        self.app.commands.append(command(self.process, self.app))
+    def button_process(self):
+        self.app.commands = [command_proc(self.process.copy(), self.app)]
+        #self.app.commands.append(command(self.process.copy(), self.app))
         self.app.process()
 
 class command_proc(command):
@@ -74,7 +78,8 @@ class button_list(button):
         super().__init__(app, command, x, y)
     
     def make_button(self, x, y):
-        pass
+        self.button = Button(self.app.root, text=u"", command=self.command.button_process)
+        self.button.place(x=x, y=y)
 
 class button_proc(button):
     # 画像処理コマンドの引数を指定する、入出力の型をわかりやすくするためのオブジェクト

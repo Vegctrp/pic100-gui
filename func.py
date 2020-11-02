@@ -11,6 +11,9 @@ class func_info():
 
     def __call__(self, *args):
         return self.func(*args)
+    
+    def copy(self):
+        return func_info(self.func, self.name, self.argstype)
 
 # 01
 def BGR2RGB(img):

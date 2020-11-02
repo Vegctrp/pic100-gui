@@ -49,9 +49,12 @@ class Application(tk.Frame):
 
         ##################################### # easy button仮置き
         self.btn_funcs = funcs.copy()
-        self.btn_commands = [command_easy(i, self) for i in self.btn_funcs]
-        for i, com in enumerate(self.btn_commands):
-            com.show_button(x=i*20, y=440)
+        self.easy_btn_commands = [command_easy(i, self) for i in self.btn_funcs]
+        for i, com in enumerate(self.easy_btn_commands):
+            com.show_button(x=params.easy_button_x_base+i*params.easy_button_x_diff, y=params.easy_button_y_base)
+        self.list_btn_commands = [command_list(i, self) for i in self.btn_funcs]
+        for i, com in enumerate(self.list_btn_commands):
+            com.show_button(x=params.list_button_x_base, y=params.list_button_y_base+i*params.list_button_y_diff)
         #######################################
 
     def process(self):
